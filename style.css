@@ -1,0 +1,70 @@
+.button {
+    background-color: #c5eaf3;
+    color: #000000;
+    padding: 10px;
+    border-radius: 10px;
+    margin: 10px;
+    font-size: 25px;
+    width: 200px;
+    border: 3px solid #000000;
+}
+
+.continue_button {
+    left: 50%;
+    position: absolute;
+    -ms-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+}
+
+.expression_p {
+    font-family: 'Cambria Math';
+    font-size: 150px;
+    text-align: center;
+    margin: 0;
+    margin-bottom: 20px;
+}
+
+.wrong_answer_bodybackground {
+    background-color: rgb(250, 67, 54);
+}
+
+#principal_div {
+    position: relative;
+}
+
+#expression_div {
+    background-color: white;
+    position: relative;
+}
+
+#timer {
+    font-family: 'Cambria Math';
+    font-size: 30px;
+    position: absolute;
+    top: 0px;
+}
+
+#results_div {
+    margin: auto;
+    width: 40%;
+    border: 3px solid #000000;
+    padding: 5px;
+}
+
+.answers_p {
+    font-family: 'Cambria Math';
+    font-size: 20px;
+    position: relative;
+}
+
+.result_p {
+    font-family: 'Cambria Math';
+    font-size: 25px;
+}
+
+#results_title_p {
+    font-family: 'Cambria Math';
+    font-size: 40px;
+    margin-top: 2%;
+    text-align: center;
+}
