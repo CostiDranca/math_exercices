@@ -6,6 +6,9 @@ var wrong_answer_combinations = [];
 var correct_answers = 0;
 var wrong_answers = 0;
 
+var min_value_operand = 0;
+var max_value_operand = 10;
+
 var continue_with_new_question = true;
 
 var passed_seconds = 0;
@@ -30,6 +33,18 @@ function shuffle(array) {
       [array[currentIndex], array[randomIndex]] = [
         array[randomIndex], array[currentIndex]];
     }
+}
+
+function value_operand_range_input() {
+    var min_value_operand = document.getElementById("min_value_operand");
+    var max_value_operand = document.getElementById("max_value_operand");
+
+    if (Number(min_value_operand.value) > Number(max_value_operand.value)) {
+        min_value_operand.value = max_value_operand.value
+    }
+
+    document.getElementById("min_value_operand_label_1").innerText = min_value_operand.value;
+    document.getElementById("max_value_operand_label_1").innerText = max_value_operand.value;
 }
 
 function update_timer() {
@@ -115,6 +130,7 @@ function evaluateMathExpression() {
 function finish() {
     clearTimeout(answer_timeout);
     clearInterval(timer_interval);
+    document.removeEventListener("keydown", keydownEventHandler);
     document.getElementById('expression').remove();
 
     var results_div = document.createElement("div");
@@ -153,7 +169,16 @@ function finish() {
         + passed_seconds)/(correct_answers + wrong_answers)).toFixed(2).toString() + "</b> secunde";
     results_div.appendChild(mean_time_per_question_p)
 
-    document.getElementById('principal_div').appendChild(results_div);
+    principal_div = document.getElementById('principal_div');
+    principal_div.appendChild(results_div)
+
+    var restart_button = document.createElement("button");
+    restart_button.setAttribute("id", "restart_button");
+    restart_button.setAttribute("class", "button");
+    restart_button.setAttribute("onclick", "restart()");
+    restart_button.innerHTML = "<b>Restart</b>";
+
+    principal_div.appendChild(restart_button);
 }
 
 function changeMathExpression() {
@@ -208,11 +233,10 @@ function keydownEventHandler(event) {
     }
 }
 
-function start() {
-    document.getElementById('start_button').remove();
+function init() {
     document.getElementById('correct_answers').innerText = "0";
     document.getElementById('wrong_answers').innerText = "0";
-    document.addEventListener("keydown", keydownEventHandler)
+    document.addEventListener("keydown", keydownEventHandler);
 
     expression_idx = -1;
     combinations = [];
@@ -221,17 +245,14 @@ function start() {
     wrong_answers = 0;
     continue_with_new_question = true;
 
-    //const numbers = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
-    const numbers = [0, 1 ,2];
-
     for (var i = 0; i <= 10; i++) {
-        for (var j = 0; j <= 10; j++) {
+        for (var j = min_value_operand; j <= max_value_operand; j++) {
             combinations.push([i, "+", j]);
         }
     }
 
     for (var i = 0; i <= 20; i++) {
-        for (var j = 0; j <= 10 && j <= i; j++) {
+        for (var j = min_value_operand; j <= max_value_operand && j <= i; j++) {
             if (((i-j)>0) && ((i-j)<=10)) {
                 combinations.push([i, "&minus;", j]);
             }
@@ -256,4 +277,30 @@ function start() {
     passed_seconds = 0;
     passed_minutes = 0;
     timer_interval = setInterval(update_timer, 1000);
+}
+
+function restart() {
+    var correct_answers_p = document.getElementById('correct_answers_p');
+    var wrong_answers_p = document.getElementById('wrong_answers_p');
+    correct_answers_p.setAttribute("class", "answers_p");
+    wrong_answers_p.setAttribute("class", "answers_p");
+
+    var principal_div = document.getElementById('principal_div');
+    var expression_div = document.getElementById('expression_div');
+    principal_div.insertBefore(correct_answers_p, expression_div);
+    principal_div.insertBefore(wrong_answers_p, expression_div);
+
+    document.getElementById("restart_button").remove();
+    document.getElementById("results_div").remove();
+
+    init();
+}
+
+function start() {
+    document.getElementById('start_button').remove();
+    min_value_operand = Number(document.getElementById('min_value_operand').value);
+    max_value_operand = Number(document.getElementById('max_value_operand').value);
+    document.getElementById('configuration_form').remove();
+
+    init();
 }
