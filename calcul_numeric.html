@@ -18,6 +18,17 @@
             <label for="max_value_operand" class="answers_p">Valoare maximă a operandului:</label>
             <input type="range" min="0" max="10" value="10" id="max_value_operand" name="max_value_operand" oninput="value_operand_range_input()">
             <label for="max_value_operand" class="answers_p" id="max_value_operand_label_1">10</label><br><br>
+            <label for="answer_timeout_milliseconds" class="answers_p">Timp limită pentru a răspunde:</label>
+            <input type="range" min="1" max="10" value="8" id="answer_timeout_milliseconds" name="answer_timeout_milliseconds" oninput="answer_timeout_milliseconds_range_input()">
+            <label for="answer_timeout_milliseconds" class="answers_p" id="answer_timeout_milliseconds_label">8 s</label><br><br>
+            <input type="checkbox" id="addition_checkbox" name="addition_checkbox" value="Addition">
+            <label for="addition_checkbox" class="answers_p"> Adunare</label><br><br>
+            <input type="checkbox" id="subtraction_checkbox" name="subtraction_checkbox" value="Subtraction">
+            <label for="subtraction_checkbox" class="answers_p"> Scădere</label><br><br>
+            <input type="checkbox" id="multiplication_checkbox" name="multiplication_checkbox" value="Multiplication">
+            <label for="multiplication_checkbox" class="answers_p"> Înmulțire</label><br><br>
+            <input type="checkbox" id="division_checkbox" name="division_checkbox" value="Division">
+            <label for="division_checkbox" class="answers_p"> Împărțire</label><br><br>
         </form>
         <div id="expression_div">
             <p id="expression" class="expression_p"></p>

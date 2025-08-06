@@ -2,6 +2,10 @@ var expression_idx = -1;
 var combinations = [];
 var permutation = [];
 var wrong_answer_combinations = [];
+var enabled_addition = false;
+var enabled_subtraction = false;
+var enabled_multiplication = false;
+var enabled_division = false;
 
 var correct_answers = 0;
 var wrong_answers = 0;
@@ -16,6 +20,7 @@ var passed_minutes = 0;
 
 var answer_timeout;
 var timer_interval;
+var answer_timeout_milliseconds = 8000;
 
 const digit_keys = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"];
 
@@ -45,6 +50,11 @@ function value_operand_range_input() {
 
     document.getElementById("min_value_operand_label_1").innerText = min_value_operand.value;
     document.getElementById("max_value_operand_label_1").innerText = max_value_operand.value;
+}
+
+function answer_timeout_milliseconds_range_input() {
+    document.getElementById("answer_timeout_milliseconds_label").innerText = 
+        document.getElementById("answer_timeout_milliseconds").value + " s";
 }
 
 function update_timer() {
@@ -87,8 +97,12 @@ function evaluateMathExpression() {
     var correct_answer;
     if (combination[1] == "+") {
         correct_answer = combination[0] + combination[2];
-    } else {
+    } else if (combination[1] == "&minus;") {
         correct_answer = combination[0] - combination[2];
+    } else if (combination[1] == " &sdot; ") {
+        correct_answer = combination[0] * combination[2];
+    } else {
+        correct_answer = combination[0] / combination[2]
     }
 
     if (correct_answer == Number(expression_split[1])) {
@@ -200,7 +214,7 @@ function changeMathExpression() {
         combination[1] + combination[2].toString() + "=?";
 
     clearTimeout(answer_timeout);
-    answer_timeout = setTimeout(evaluateMathExpression, 8000);
+    answer_timeout = setTimeout(evaluateMathExpression, answer_timeout_milliseconds);
 }
 
 function keydownEventHandler(event) {
@@ -245,16 +259,37 @@ function init() {
     wrong_answers = 0;
     continue_with_new_question = true;
 
-    for (var i = 0; i <= 10; i++) {
-        for (var j = min_value_operand; j <= max_value_operand; j++) {
-            combinations.push([i, "+", j]);
+    if (enabled_addition) {
+        for (var i = 0; i <= 10; i++) {
+            for (var j = min_value_operand; j <= max_value_operand; j++) {
+                combinations.push([i, "+", j]);
+            }
         }
     }
 
-    for (var i = 0; i <= 20; i++) {
-        for (var j = min_value_operand; j <= max_value_operand && j <= i; j++) {
-            if (((i-j)>0) && ((i-j)<=10)) {
-                combinations.push([i, "&minus;", j]);
+    if (enabled_subtraction) {
+        for (var i = 0; i <= 20; i++) {
+            for (var j = min_value_operand; j <= max_value_operand && j <= i; j++) {
+                if (((i-j)>0) && ((i-j)<=10)) {
+                    combinations.push([i, "&minus;", j]);
+                }
+            }
+        }
+    }
+
+    if (enabled_multiplication) {
+        for (var i = min_value_operand; i <= max_value_operand; i++) {
+            for (var j = 0; j <= 10; j++) {
+                combinations.push([i, " &sdot; ", j]);
+            }
+        }
+    }
+
+    if (enabled_division) {
+        var division_min_value_operand = Math.max(1, min_value_operand);
+        for (var i = 0; i <= 10; i++) {
+            for (var j = division_min_value_operand; j <= max_value_operand; j++) {
+                combinations.push([i*j, " : ", j]);
             }
         }
     }
@@ -296,10 +331,41 @@ function restart() {
     init();
 }
 
+function update_operations_configuration_error(error_message) {
+    var operations_configuration_error = document.getElementById("operations_configuration_error");
+    if (!operations_configuration_error) {
+        operations_configuration_error = document.createElement("p");
+        operations_configuration_error.setAttribute("class", "answers_p");
+        operations_configuration_error.setAttribute("style", "color:red");
+        operations_configuration_error.setAttribute("id", "operations_configuration_error");
+        document.getElementById('configuration_form').insertBefore(operations_configuration_error,
+            document.getElementById('addition_checkbox'));
+    }
+    operations_configuration_error.innerHTML = error_message;
+}
+
 function start() {
+    enabled_addition = document.getElementById('addition_checkbox').checked;
+    enabled_subtraction = document.getElementById('subtraction_checkbox').checked;
+    enabled_multiplication = document.getElementById('multiplication_checkbox').checked;
+    enabled_division = document.getElementById('division_checkbox').checked;
+
+    if (!enabled_addition && !enabled_subtraction && !enabled_multiplication) {
+        if (!enabled_division) {
+            update_operations_configuration_error("Cel puțin o operație trebuie selectată");
+            return;
+        }
+        else if ((Number(document.getElementById("min_value_operand").value) == 0)
+                && (Number(document.getElementById("max_value_operand").value) == 0)) {
+            update_operations_configuration_error("Nu există împărțire cu 0");
+            return;
+        }
+    }
+
     document.getElementById('start_button').remove();
     min_value_operand = Number(document.getElementById('min_value_operand').value);
     max_value_operand = Number(document.getElementById('max_value_operand').value);
+    answer_timeout_milliseconds = Number(document.getElementById('answer_timeout_milliseconds').value) * 1000;
     document.getElementById('configuration_form').remove();
 
     init();
